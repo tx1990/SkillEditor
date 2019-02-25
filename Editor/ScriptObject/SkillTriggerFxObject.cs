@@ -1,23 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SkillEditor
 {
-	public class SkillTriggerFxObject : ScriptableObject, IToSkillTriggerBase
+	public class SkillTriggerFxObject : SkillTriggerObjectBase
 	{
 		[Header("Fx")]public SkillTriggerFx Trigger;
 
-		public static explicit operator SkillTriggerFxObject(SkillTriggerBase t)
+		public override void SetTriggerBase(SkillTriggerBase t)
 		{
-			if(!(t is SkillTriggerFx trigger)) return null;
-			var o = CreateInstance<SkillTriggerFxObject>();
-			o.Trigger = trigger;
-			return o;
+			if(!(t is SkillTriggerFx trigger)) return;
+			Trigger = trigger;
 		}
 
-		public SkillTriggerBase ToSkillTriggerBase()
+		public override SkillTriggerBase GetTriggerBase()
 		{
 			return Trigger;
 		}

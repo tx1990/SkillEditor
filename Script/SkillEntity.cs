@@ -4,12 +4,8 @@ using UnityEngine;
 
 namespace SkillEditor
 {
-    public class SkillEntity
+    public partial class SkillEntity
     {
-        [XmlArrayItem(typeof(SkillTriggerAnimation)),
-         XmlArrayItem(typeof(SkillTriggerFx))]
-        public List<SkillTriggerBase> SkillTriggers { get; private set; }
-
         [XmlAttribute] public float LifeTime { get; set; }
 
         private float m_curTime;
@@ -22,26 +18,26 @@ namespace SkillEditor
         public void Play()
         {
             m_curTime = 0;
-            for (int i = 0, count = SkillTriggers.Count; i < count; i++)
+            foreach (var trigger in SkillTriggers)
             {
-                SkillTriggers[i].Reset();
+                trigger.Reset();
             }
         }
 
         public void Stop()
         {
-            for (int i = 0, count = SkillTriggers.Count; i < count; i++)
+            foreach (var trigger in SkillTriggers)
             {
-                SkillTriggers[i].Stop();
+                trigger.Stop();
             }
         }
 
         public void Update()
         {
             m_curTime += Time.deltaTime;
-            for (int i = 0, count = SkillTriggers.Count; i < count; i++)
+            foreach (var trigger in SkillTriggers)
             {
-                SkillTriggers[i].Update(m_curTime);
+                trigger.Update(m_curTime);
             }
         }
     }

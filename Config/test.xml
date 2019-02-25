@@ -1,0 +1,31 @@
+﻿<SkillEntity LifeTime="5">
+    <SkillTriggers>
+        <Animation>
+            <StartTime>0</StartTime>
+            <EndTime>5</EndTime>
+            <AnimationName />
+            <Animations />
+        </Animation>
+        <Fx>
+            <StartTime>1</StartTime>
+            <EndTime>2</EndTime>
+            <FxName>Cube</FxName>
+            <BindPoint>Leg</BindPoint>
+            <Position>
+                <x>0</x>
+                <y>0</y>
+                <z>0</z>
+            </Position>
+            <Rotation>
+                <x>0</x>
+                <y>0</y>
+                <z>0</z>
+            </Rotation>
+            <Scale>
+                <x>0</x>
+                <y>0</y>
+                <z>0</z>
+            </Scale>
+        </Fx>
+    </SkillTriggers>
+</SkillEntity>

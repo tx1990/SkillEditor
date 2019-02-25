@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace SkillEditor
 {
+    public enum SkillTriggerType
+    {
+        Animation,
+        Fx,
+    }
+
     public abstract class SkillTriggerBase
     {
         private enum TriggerState
@@ -14,7 +20,8 @@ namespace SkillEditor
         }
 
         [XmlIgnore] public readonly SkillTriggerType TriggerType;
-        public Vector2 Time;
+        public float StartTime;
+        public float EndTime;
 
         private TriggerState m_curState;
 
@@ -37,7 +44,7 @@ namespace SkillEditor
             switch (m_curState)
             {
                 case TriggerState.NotTrigger:
-                    if (curTime >= Time.x)
+                    if (curTime >= StartTime)
                     {
                         Trigger();
                         m_curState = TriggerState.Trigger;
@@ -45,7 +52,7 @@ namespace SkillEditor
 
                     break;
                 case TriggerState.Trigger:
-                    if (curTime >= Time.y)
+                    if (curTime >= EndTime)
                     {
                         Stop();
                         m_curState = TriggerState.Over;

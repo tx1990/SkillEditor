@@ -1,23 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SkillEditor
 {
-	public class SkillTriggerAnimationObject : ScriptableObject, IToSkillTriggerBase
+	public class SkillTriggerAnimationObject : SkillTriggerObjectBase
 	{
 		[Header("Animation")]public SkillTriggerAnimation Trigger;
 
-		public static explicit operator SkillTriggerAnimationObject(SkillTriggerBase t)
+		public override void SetTriggerBase(SkillTriggerBase t)
 		{
-			if(!(t is SkillTriggerAnimation trigger)) return null;
-			var o = CreateInstance<SkillTriggerAnimationObject>();
-			o.Trigger = trigger;
-			return o;
+			if(!(t is SkillTriggerAnimation trigger)) return;
+			Trigger = trigger;
 		}
 
-		public SkillTriggerBase ToSkillTriggerBase()
+		public override SkillTriggerBase GetTriggerBase()
 		{
 			return Trigger;
 		}

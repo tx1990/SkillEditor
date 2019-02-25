@@ -15,7 +15,7 @@ namespace SkillEditor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var attr = (ResourcesNameAttribute) attribute;
-            if (!string.IsNullOrEmpty(property.stringValue))
+            if (m_res == null && !string.IsNullOrEmpty(property.stringValue))
             {
                 m_res = SkillHelper.LoadFromResource(property.stringValue, attr.ResourceType);
             }

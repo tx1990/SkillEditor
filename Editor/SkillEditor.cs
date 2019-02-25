@@ -15,6 +15,9 @@ namespace SkillEditor
         private SkillTriggerType m_curType;
         private int m_deleteIndex = -1;
 
+        private readonly string m_defaultPath = "/Config";
+        private string m_filePath = string.Empty;
+
         [MenuItem("SkillEditor/SkillEditor")]
         static void Init()
         {
@@ -33,13 +36,71 @@ namespace SkillEditor
 
         void OnGUI()
         {
-            //m_handleses.Clear();
             ShowEditGui();
             ShowSkillEntityGui();
         }
 
         private void ShowEditGui()
         {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("New"))
+            {
+                m_filePath = EditorUtility.SaveFilePanel("New",
+                    Application.dataPath + m_defaultPath, "", "xml");
+                m_objects.Clear();
+                var entity = new SkillEntity { LifeTime = m_lifeTime };
+                SkillHelper.XmlSerializeToFile(entity, m_filePath, Encoding.UTF8);
+            }
+            if (GUILayout.Button("Save"))
+            {
+                var entity = new SkillEntity { LifeTime = m_lifeTime };
+                for (int i = 0, count = m_objects.Count; i < count; i++)
+                {
+                    if (m_objects[i].targetObject is SkillTriggerObjectBase objectBase)
+                    {
+                        entity.SkillTriggers.Add(objectBase.GetTriggerBase());
+                    }
+                }
+
+                SkillHelper.XmlSerializeToFile(entity, m_filePath, Encoding.UTF8);
+            }
+            if (GUILayout.Button("Save as"))
+            {
+                m_filePath = EditorUtility.SaveFilePanel("Save As...",
+                    Application.dataPath + m_defaultPath, "", "xml");
+
+                var entity = new SkillEntity { LifeTime = m_lifeTime };
+                for (int i = 0, count = m_objects.Count; i < count; i++)
+                {
+                    if (m_objects[i].targetObject is SkillTriggerObjectBase objectBase)
+                    {
+                        entity.SkillTriggers.Add(objectBase.GetTriggerBase());
+                    }
+                }
+
+                SkillHelper.XmlSerializeToFile(entity, m_filePath, Encoding.UTF8);
+            }
+            if (GUILayout.Button("Load"))
+            {
+                m_filePath = EditorUtility.OpenFilePanel("Load",
+                    Application.dataPath + m_defaultPath, "xml");
+                var entity = SkillHelper.XmlDeserializeFromFile<SkillEntity>(m_filePath, Encoding.UTF8);
+                m_objects.Clear();
+                foreach (var trigger in entity.SkillTriggers)
+                {
+                    var s = $"SkillEditor.SkillTrigger{trigger.TriggerType.ToString()}Object";
+                    var o = CreateInstance(s);
+                    if (o is SkillTriggerObjectBase objectBase)
+                    {
+                        objectBase.SetTriggerBase(trigger);
+                        m_objects.Add(new SerializedObject(objectBase));
+                    }
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Add"))
             {
@@ -53,20 +114,6 @@ namespace SkillEditor
 
             m_curType = (SkillTriggerType) EditorGUILayout.EnumPopup(m_curType);
             EditorGUILayout.EndHorizontal();
-
-            if (GUILayout.Button("Save"))
-            {
-                var entity = new SkillEntity {LifeTime = m_lifeTime};
-                for (int i = 0, count = m_objects.Count; i < count; i++)
-                {
-                    if (m_objects[i].targetObject is IToSkillTriggerBase toTrigger)
-                    {
-                        entity.SkillTriggers.Add(toTrigger.ToSkillTriggerBase());
-                    }
-                }
-
-                SkillHelper.XmlSerializeToFile(entity, $"{Application.dataPath}/test.xml", Encoding.UTF8);
-            }
         }
 
         private void ShowSkillEntityGui()
@@ -95,12 +142,15 @@ namespace SkillEditor
 
                 EditorGUILayout.EndVertical();
 
-                var timeProp = trigger.FindPropertyRelative("Time");
-                var time = timeProp.vector2Value;
-                EditorGUILayout.MinMaxSlider(ref time.x, ref time.y, 0, m_lifeTime, GUILayout.ExpandWidth(true));
-                time.x = Mathf.Clamp(time.x, 0, m_lifeTime);
-                time.y = Mathf.Clamp(time.y, time.x, m_lifeTime);
-                timeProp.vector2Value = time;
+                var startTimeProp = trigger.FindPropertyRelative("StartTime");
+                var endTimeProp = trigger.FindPropertyRelative("EndTime");
+                var startTime = startTimeProp.floatValue;
+                var endTime = endTimeProp.floatValue;
+                EditorGUILayout.MinMaxSlider(ref startTime, ref endTime, 0, m_lifeTime, GUILayout.ExpandWidth(true));
+                startTime = Mathf.Clamp(startTime, 0, m_lifeTime);
+                endTime = Mathf.Clamp(endTime, startTime, m_lifeTime);
+                startTimeProp.floatValue = startTime;
+                endTimeProp.floatValue = endTime;
 
                 EditorGUILayout.EndHorizontal();
 
@@ -117,23 +167,6 @@ namespace SkillEditor
 
             EditorGUILayout.EndScrollView();
 
-        }
-
-        void OnFocus()
-        {
-            SceneView.onSceneGUIDelegate -= OnSceneGUI;
-            SceneView.onSceneGUIDelegate += OnSceneGUI;
-        }
-
-        void OnDestroy()
-        {
-            SceneView.onSceneGUIDelegate -= OnSceneGUI;
-        }
-
-        private void OnSceneGUI(SceneView sceneView)
-        {
-            
-            HandleUtility.Repaint();
         }
     }
 }

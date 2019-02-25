@@ -8,9 +8,9 @@ namespace SkillEditor
     [XmlType("Fx")]
     public class SkillTriggerFx : SkillTriggerBase
     {
-        [ResourcesName(typeof(GameObject))]
-        public string FxName;
+        [ResourcesName(typeof(GameObject))] public string FxName;
 
+        [BindPoint(new[] {"Head", "Hand", "Leg"})]
         public string BindPoint;
 
         public Vector3 Position;
