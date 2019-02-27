@@ -35,7 +35,8 @@ namespace SkillEditor
                 property.stringValue = attr.Points[m_index];
             }
 
-            var index = EditorGUILayout.Popup("BindPoint", m_index, attr.Points);
+            var index = EditorGUI.Popup(position, property.name, m_index, attr.Points);
+
             if (index != m_index)
             {
                 m_index = index;
